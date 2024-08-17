@@ -1,15 +1,15 @@
-
- import "./user.zmodel"  
+import "./user.zmodel"
 
 model Note {
+    id          String   @id @default(uuid())
+    date        String?
+    content     String
+    goals       String?  // Added field to store user goals for a specific date
+    userId      String?
+    user        User?    @relation(fields: [userId], references: [id], name: "user")
 
-    id                String        @id @default(uuid())  
-    date            String?          
-    content      String          
-    userId        String?          
-    user            User?            @relation(fields: [userId], references: [id], name:"user")  
-
-dateCreated DateTime @default(now())
-      dateUpdated DateTime @updatedAt  @default(now())
-      @@allow("all", true)
+    dateCreated DateTime @default(now())
+    dateUpdated DateTime @updatedAt @default(now())
+    
+    @@allow("all", true)
 }

@@ -1,8 +1,6 @@
-
- import "./user.zmodel"  
+import "./user.zmodel"
 
 model Video {
-
     id                String        @id @default(uuid())  
     url              String          
     title          String?          
@@ -10,8 +8,9 @@ model Video {
     datePosted  String?          
     userId        String?          
     user            User?            @relation(fields: [userId], references: [id], name:"user")  
+    hasAudio       Boolean        @default(false)
 
-dateCreated DateTime @default(now())
-      dateUpdated DateTime @updatedAt  @default(now())
-      @@allow("all", true)
+    dateCreated DateTime @default(now())
+    dateUpdated DateTime @updatedAt  @default(now())
+    @@allow("all", true)
 }

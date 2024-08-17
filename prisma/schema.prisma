@@ -155,6 +155,7 @@ model Video {
   datePosted  String?
   userId      String?
   user        User?    @relation(fields: [userId], references: [id], name: "user")
+  hasAudio    Boolean  @default(false)
   dateCreated DateTime @default(now())
   dateUpdated DateTime @default(now()) @updatedAt()
 }
@@ -175,6 +176,7 @@ model Note {
   id          String   @id() @default(uuid())
   date        String?
   content     String
+  goals       String?
   userId      String?
   user        User?    @relation(fields: [userId], references: [id], name: "user")
   dateCreated DateTime @default(now())

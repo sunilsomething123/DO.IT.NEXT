@@ -1,6 +1,6 @@
 'use client'
 
-import { Typography, Row, Col, Card, Input } from 'antd'
+import { Typography, Row, Col, Card, Input, Button } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 const { Title, Text, Paragraph } = Typography
 import { useUserContext } from '@/core/context'
@@ -32,6 +32,10 @@ export default function HomePage() {
     router.push(`/Discover-content?search=${value}`)
   }
 
+  const handleRedirect = () => {
+    router.push('/powerhouse')
+  }
+
   return (
     <PageLayout layout="narrow">
       <div
@@ -54,6 +58,8 @@ export default function HomePage() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             color: 'white',
+            whiteSpace: 'normal',
+            textAlign: 'center',
           }}
         >
           Happiness is not a chance, it's a choice
@@ -70,6 +76,9 @@ export default function HomePage() {
             Improve yourself by our website and redirect to the built Powerhouse
             page where users can make notes of their day to improve themselves.
           </Paragraph>
+          <Button type="primary" onClick={handleRedirect} style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}>
+            Go to Powerhouse
+          </Button>
           <img
             src="https://wallpapersmug.com/download/3840x2400/fed51a/Ken-Kaneki-anime-dark.jpg"
             alt="Motivating Quote Background"

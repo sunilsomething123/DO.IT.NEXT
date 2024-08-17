@@ -2,7 +2,7 @@
 
 import { Prisma } from '@prisma/client'
 import { useState, useEffect } from 'react'
-import { Typography, Input, Select, Card, Row, Col, Spin } from 'antd'
+import { Typography, Input, Select, Card, Row, Col, Spin, notification } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 const { Title, Text, Paragraph } = Typography
 const { Option } = Select
@@ -50,6 +50,18 @@ export default function GetWindOfPage() {
 
   const handleAuthorChange = (value: string) => {
     setAuthor(value)
+  }
+
+  const checkVideoAudio = (videoElement: HTMLVideoElement) => {
+    const hasAudio = videoElement.mozHasAudio ||
+      Boolean(videoElement.webkitAudioDecodedByteCount) ||
+      Boolean(videoElement.audioTracks && videoElement.audioTracks.length)
+    if (!hasAudio) {
+      notification.error({
+        message: 'Audio Error',
+        description: 'This video does not have audio.',
+      })
+    }
   }
 
   return (
@@ -136,6 +148,7 @@ export default function GetWindOfPage() {
                   loop
                   muted
                   style={{ width: '100%' }}
+                  onLoadedMetadata={e => checkVideoAudio(e.currentTarget)}
                 />
               }
             >

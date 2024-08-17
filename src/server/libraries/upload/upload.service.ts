@@ -47,16 +47,12 @@ export class Service {
     }
   }
 
-  async uploadPublic(...files: UploadFileType[]): Promise<{ url: string }[]> {
+  async uploadPublic(files: UploadFileType[]): Promise<{ url: string }[]> {
     await this.ensureInstance()
 
-    const responses = []
-
-    for (const file of files) {
-      const response = await this.instance.uploadPublic({ file })
-
-      responses.push(response)
-    }
+    const responses = await Promise.all(
+      files.map(file => this.instance.uploadPublic({ file })),
+    )
 
     return responses
   }

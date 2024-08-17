@@ -132,6 +132,7 @@ export default function PostContentPage() {
             fileList={fileList}
             onPreview={handlePreview}
             onChange={handleChange}
+            beforeUpload={() => false} // Prevent automatic upload
           >
             {fileList.length >= 1 ? null : (
               <div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Typography, Calendar, Card, Row, Col, Spin } from 'antd'
+import { Typography, Calendar, Card, Row, Col, Spin, Form, Input, Button } from 'antd'
 import {
   LikeOutlined,
   FileTextOutlined,
@@ -10,7 +10,6 @@ import {
 const { Title, Text, Paragraph } = Typography
 import { useUserContext } from '@/core/context'
 import { useRouter, useParams } from 'next/navigation'
-import { useUploadPublic } from '@/core/hooks/upload'
 import { useSnackbar } from 'notistack'
 import dayjs from 'dayjs'
 import { Api } from '@/core/trpc'
@@ -34,9 +33,28 @@ export default function PowerhousePage() {
     })
 
   const [selectedDate, setSelectedDate] = useState(dayjs())
+  const [form] = Form.useForm()
+
+  const { mutateAsync: createNote } = Api.note.create.useMutation()
 
   const onDateSelect = date => {
     setSelectedDate(date)
+  }
+
+  const onFinish = async values => {
+    try {
+      await createNote({
+        data: {
+          ...values,
+          date: selectedDate.format('YYYY-MM-DD'),
+          userId,
+        },
+      })
+      enqueueSnackbar('Note and goals saved successfully!', { variant: 'success' })
+      form.resetFields()
+    } catch (error) {
+      enqueueSnackbar('Failed to save note and goals.', { variant: 'error' })
+    }
   }
 
   return (
@@ -93,6 +111,34 @@ export default function PowerhousePage() {
                 </Text>
               </div>
             )}
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24}>
+          <Card title="Add Notes and Goals" bordered={false}>
+            <Form form={form} onFinish={onFinish}>
+              <Form.Item
+                name="content"
+                label="Notes"
+                rules={[{ required: true, message: 'Please input your notes!' }]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
+              <Form.Item
+                name="goals"
+                label="Goals"
+                rules={[{ required: true, message: 'Please input your goals!' }]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Save
+                </Button>
+              </Form.Item>
+            </Form>
           </Card>
         </Col>
       </Row>
