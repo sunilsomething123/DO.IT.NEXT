@@ -1,7 +1,6 @@
-
- import "./user.zmodel"  
- import "./contentTag.zmodel"  
- import "./savedContent.zmodel"  
+import "./user.zmodel"  
+import "./contentTag.zmodel"  
+import "./savedContent.zmodel"  
 
 model Quote {
 
@@ -13,9 +12,13 @@ model Quote {
     userId        String?          
     user            User?            @relation(fields: [userId], references: [id], name:"user")  
 
-contentTagsAsContent  ContentTag[]  @relation("content")  
+    likes         Int             @default(0)
+    comments      Int             @default(0)
+    shares        Int             @default(0)
+
+    contentTagsAsContent  ContentTag[]  @relation("content")  
     savedContentsAsContent  SavedContent[]  @relation("content")  
-      dateCreated DateTime @default(now())
-      dateUpdated DateTime @updatedAt  @default(now())
-      @@allow("all", true)
+    dateCreated DateTime @default(now())
+    dateUpdated DateTime @updatedAt  @default(now())
+    @@allow("all", true)
 }

@@ -96,6 +96,9 @@ model Quote {
   datePosted             String?
   userId                 String?
   user                   User?          @relation(fields: [userId], references: [id], name: "user")
+  likes                  Int            @default(0)
+  comments               Int            @default(0)
+  shares                 Int            @default(0)
   contentTagsAsContent   ContentTag[]   @relation("content")
   savedContentsAsContent SavedContent[] @relation("content")
   dateCreated            DateTime       @default(now())
@@ -156,6 +159,9 @@ model Video {
   userId      String?
   user        User?    @relation(fields: [userId], references: [id], name: "user")
   hasAudio    Boolean  @default(false)
+  likes       Int      @default(0)
+  comments    Int      @default(0)
+  shares      Int      @default(0)
   dateCreated DateTime @default(now())
   dateUpdated DateTime @default(now()) @updatedAt()
 }

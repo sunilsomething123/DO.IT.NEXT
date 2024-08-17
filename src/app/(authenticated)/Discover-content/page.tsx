@@ -2,8 +2,8 @@
 
 import { Prisma } from '@prisma/client'
 import { useState, useEffect } from 'react'
-import { Typography, Input, Select, Card, Row, Col, Spin, notification } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { Typography, Input, Select, Card, Row, Col, Spin, notification, Button, Modal } from 'antd'
+import { SearchOutlined, LikeOutlined, CommentOutlined, ShareAltOutlined } from '@ant-design/icons'
 const { Title, Text, Paragraph } = Typography
 const { Option } = Select
 import { useUserContext } from '@/core/context'
@@ -23,6 +23,9 @@ export default function GetWindOfPage() {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [category, setCategory] = useState<string | undefined>(undefined)
   const [author, setAuthor] = useState<string | undefined>(undefined)
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewImage, setPreviewImage] = useState('')
+  const [previewTitle, setPreviewTitle] = useState('')
 
   const { data: quotes, isLoading: quotesLoading } =
     Api.quote.findMany.useQuery({
@@ -39,6 +42,10 @@ export default function GetWindOfPage() {
     Api.image.findMany.useQuery({})
   const { data: videos, isLoading: videosLoading } =
     Api.video.findMany.useQuery({})
+
+  const { mutateAsync: likeContent } = Api.like.create.useMutation()
+  const { mutateAsync: commentContent } = Api.comment.create.useMutation()
+  const { mutateAsync: shareContent } = Api.share.create.useMutation()
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
@@ -61,6 +68,41 @@ export default function GetWindOfPage() {
         message: 'Audio Error',
         description: 'This video does not have audio.',
       })
+    }
+  }
+
+  const handlePreview = (url: string, title: string) => {
+    setPreviewImage(url)
+    setPreviewTitle(title)
+    setPreviewVisible(true)
+  }
+
+  const handleCancel = () => setPreviewVisible(false)
+
+  const handleLike = async (contentId: string) => {
+    try {
+      await likeContent({ data: { contentId, userId: user.id } })
+      enqueueSnackbar('Content liked successfully', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar('Failed to like content', { variant: 'error' })
+    }
+  }
+
+  const handleComment = async (contentId: string) => {
+    try {
+      await commentContent({ data: { contentId, userId: user.id, comment: 'Great content!' } })
+      enqueueSnackbar('Comment added successfully', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar('Failed to add comment', { variant: 'error' })
+    }
+  }
+
+  const handleShare = async (contentId: string) => {
+    try {
+      await shareContent({ data: { contentId, userId: user.id } })
+      enqueueSnackbar('Content shared successfully', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar('Failed to share content', { variant: 'error' })
     }
   }
 
@@ -112,13 +154,18 @@ export default function GetWindOfPage() {
               <Text type="secondary">
                 {dayjs(quote.datePosted).format('MMMM D, YYYY')}
               </Text>
+              <div style={{ marginTop: 16 }}>
+                <Button icon={<LikeOutlined />} onClick={() => handleLike(quote.id)}>Like</Button>
+                <Button icon={<CommentOutlined />} onClick={() => handleComment(quote.id)}>Comment</Button>
+                <Button icon={<ShareAltOutlined />} onClick={() => handleShare(quote.id)}>Share</Button>
+              </div>
             </Card>
           ))}
           {images?.map(image => (
             <Card
               key={image.id}
               style={{ minWidth: 300, marginRight: 16, position: 'relative' }}
-              cover={<img alt={image.title} src={image.url} />}
+              cover={<img alt={image.title} src={image.url} onClick={() => handlePreview(image.url, image.title)} />}
             >
               <div
                 style={{
@@ -134,6 +181,11 @@ export default function GetWindOfPage() {
                   {image.title}
                 </Title>
                 <Paragraph>{image.description}</Paragraph>
+                <div style={{ marginTop: 16 }}>
+                  <Button icon={<LikeOutlined />} onClick={() => handleLike(image.id)}>Like</Button>
+                  <Button icon={<CommentOutlined />} onClick={() => handleComment(image.id)}>Comment</Button>
+                  <Button icon={<ShareAltOutlined />} onClick={() => handleShare(image.id)}>Share</Button>
+                </div>
               </div>
             </Card>
           ))}
@@ -149,6 +201,7 @@ export default function GetWindOfPage() {
                   muted
                   style={{ width: '100%' }}
                   onLoadedMetadata={e => checkVideoAudio(e.currentTarget)}
+                  onClick={() => handlePreview(video.url, video.title)}
                 />
               }
             >
@@ -166,11 +219,24 @@ export default function GetWindOfPage() {
                   {video.title}
                 </Title>
                 <Paragraph>{video.description}</Paragraph>
+                <div style={{ marginTop: 16 }}>
+                  <Button icon={<LikeOutlined />} onClick={() => handleLike(video.id)}>Like</Button>
+                  <Button icon={<CommentOutlined />} onClick={() => handleComment(video.id)}>Comment</Button>
+                  <Button icon={<ShareAltOutlined />} onClick={() => handleShare(video.id)}>Share</Button>
+                </div>
               </div>
             </Card>
           ))}
         </div>
       )}
+      <Modal
+        visible={previewVisible}
+        title={previewTitle}
+        footer={null}
+        onCancel={handleCancel}
+      >
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
     </PageLayout>
   )
 }

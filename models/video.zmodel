@@ -2,15 +2,18 @@ import "./user.zmodel"
 
 model Video {
     id                String        @id @default(uuid())  
-    url              String          
-    title          String?          
-    description  String?          
-    datePosted  String?          
-    userId        String?          
-    user            User?            @relation(fields: [userId], references: [id], name:"user")  
-    hasAudio       Boolean        @default(false)
+    url               String          
+    title             String?          
+    description       String?          
+    datePosted        String?          
+    userId            String?          
+    user              User?            @relation(fields: [userId], references: [id], name:"user")  
+    hasAudio          Boolean        @default(false)
+    likes             Int            @default(0)
+    comments          Int            @default(0)
+    shares            Int            @default(0)
 
-    dateCreated DateTime @default(now())
-    dateUpdated DateTime @updatedAt  @default(now())
+    dateCreated       DateTime       @default(now())
+    dateUpdated       DateTime       @updatedAt  @default(now())
     @@allow("all", true)
 }
